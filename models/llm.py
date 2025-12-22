@@ -43,6 +43,7 @@ class MinimalLLM(nn.Module):
         self.lm_head.weight = self.token_embedding.weight
 
         self.apply(self._init_weights)
+        torch.nn.init.zeros_(self.tok_smear.weight)
 
     def _init_weights(self, module):
         if isinstance(module, nn.Linear):
