@@ -1,18 +1,8 @@
 # 🏆 Blueberry-Nano Speedrun Leaderboard
 
-> Training is run on 1x4090 RTX.
-
-Usually we will do research together to be able to beat records, but you may also do it alone.
-
 ## 📜 Official Rules
 
-To qualify for the **Speedrun** (4.5 loss / 3.5 loss / 1B tokens) leaderboard, your run must follow these rules:
-
-1.  Surpass the record (training loss of **≤ 4.5**, training loss of **≤ 3.5**, or fastest training time on **8M tokens** / **1B tokens**).
-2.  Use the data mentioned in the [SETUP_INTRUCTIONS](docs/SETUP_INSTRUCTIONS.md)
-3.  The official metric is **Active Training Time**. Setup and compilation overhead (`Setup & Compilation Time`) is excluded.
-4.  Measure your baseline (current code on your hardware) and compare your improvements against that baseline. Explain it to the PR description concisely.
-5.  Keep the added code minimal, clean and readable.
+Please read [SETUP_INTRUCTIONS](docs/SETUP_INSTRUCTIONS.md) for detailed guide.
 
 ## ⚡ 8M Tokens Speedrun
 *Goal: Fastest Time to train 8M tokens*
@@ -63,15 +53,3 @@ To qualify for the **Speedrun** (4.5 loss / 3.5 loss / 1B tokens) leaderboard, y
 | # | Date | Val Loss | Time | User | Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | - | - | - | - | - | - |
-
-
-## 🤝 GPUs: Free & Paid
-**You may rent 4090 affordably at**
-[Salad](https://salad.com/pricing) | [Novita](https://novita.ai/pricing?gpu=1) [(or use our affiliate to help us get more compute ❤️)](https://novita.ai/?ref=mjqyndm&utm_source=affiliate) | [VastAI](https://vast.ai/pricing) - A lot of GPU providers also give 50% off on spot billing.
-
-**Free GPU Alternatives:**
-- **Lightning AI**: You can use the free **L4 GPU**.
-- **Google Colab**: Use the free T4 or paid A100.
-- **Tip**: If the model doesn't fit in your GPU memory, you can **reduce the model size** (e.g., reduce `batch_size`, `n_layer`, or `n_embd` in `configs/llm_config.py`).
-
-Once you create improvement, we will measure it on 4090.
