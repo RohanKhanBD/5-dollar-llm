@@ -47,9 +47,10 @@ Please read [SETUP_INTRUCTIONS](docs/SETUP_INSTRUCTIONS.md) for detailed guide.
 | 3 | 2025-12-22 | 3.7439 | 3.7609 | 17m 8s 637ms | 100,007,936 | [ToheedAkhtar01](https://x.com/ToheedAkhtar01) [GitHub Polar](https://github.com/Open-Superintelligence-Lab/5-dollar-llm/pull/56); [GitHub AdamW](https://github.com/Open-Superintelligence-Lab/5-dollar-llm/pull/67/) | Fused AdamW; Polar Muon - it replaces Muon’s Newton-Schulz iteration with a fixed-coefficient iterative scheme for faster, numerically stable orthogonalization. |
 | 4 | 2025-12-23 | 3.6700 | 3.7094 | 16m 17s 221ms | 100,007,936 | [bigwolfeman](https://github.com/bigwolfeman) | Cast model into bf16 - model = model.to(device, dtype=torch.bfloat16), Note: Optimizers might require higher precision for longer runs |
 
-## 🏅 The 1B Marathon (World Record)
-*Goal: Best Model @ 1B Tokens (Time < 4h)*
+## 🏅 The 1B Marathon (World Record GPT-1)
+*Goal: Best Model @ 1B Tokens (GPT-1)*
 
-| # | Date | Val Loss | Time | User | Notes |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| - | - | - | - | - | - |
+| # | Date | Train Loss | Val Loss | Time | Tokens Used | User | Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | 2025-12-23 | 3.4747 | 3.3580 | 2h 51m 31s | 1,000,007,680 | [Vuk Rosić](https://x.com/VukRosic99), [ToheedAkhtar01](https://x.com/ToheedAkhtar01), [GitHub #67](https://github.com/Open-Superintelligence-Lab/5-dollar-llm/pull/67/), [GitHub #56](https://github.com/Open-Superintelligence-Lab/5-dollar-llm/pull/56) | n_layers 32→22, optimized LRs (Muon 0.024, AdamW 0.006), Squared ReLU, Fused AdamW, Polar Muon|
+| 2 | 2025-12-23 | 3.4946 | 3.3583 | 2h 42m 49s | 1,000,007,680 | [bigwolfeman](https://github.com/bigwolfeman) | Cast model into bf16 - model = model.to(device, dtype=torch.bfloat16), Note: For 1B tokens higher precision in optimizer might be better. |
