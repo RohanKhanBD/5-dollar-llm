@@ -81,7 +81,7 @@ class MultiHeadAttention(nn.Module):
             batch_size, seq_len, self.n_heads, self.d_k
         )
         attn_output = attn_output * F.sigmoid(
-            self.atten_gate(x[..., : self.atten_gate.size(-1)])
+            self.atten_gate(x[..., : self.atten_gate.in_features])
         ).view(batch_size, seq_len, self.n_heads, 1)
         attn_output = attn_output.contiguous().view(batch_size, seq_len, self.d_model)
         # attn_output = attn_output.transpose(1, 2).reshape(B, T, self.d_model)
