@@ -17,6 +17,13 @@ from utils.helpers import set_seed, format_time
 from utils.logger import setup_logging
 
 
+# Worker init function to ensure each worker has a deterministic seed
+def worker_init_fn(worker_id):
+    worker_seed = 42 + worker_id
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
+
 def print_system_info():
     device = "CUDA" if torch.cuda.is_available() else "CPU"
     print(f"Device: {device}")
@@ -172,7 +179,7 @@ def main():
     parser = argparse.ArgumentParser(description="Train MoE Model")
     parser.add_argument("--muon_lr", type=float, help="Override Muon learning rate")
     parser.add_argument("--adamw_lr", type=float, help="Override AdamW learning rate")
-    parser.add_argument("--train_tokens", type=int, default=100000000, help="Override train_tokens")
+    parser.add_argument("--train_tokens", type=int, default=8000000, help="Override train_tokens")
     parser.add_argument("--output_dir", type=str, default="./checkpoints", help="Output directory")
     parser.add_argument("--config_class", type=str, help="Python path to config class (e.g., configs.llm_config.BlueberryConfig)")
     parser.add_argument("--load_checkpoint", type=str, help="Path to checkpoint file to load weights from")
@@ -291,12 +298,6 @@ def main():
     train_ds, val_ds = prepare_datasets(data_cfg, tokenizer)
     
     logger.info(f"Train sequences: {len(train_ds):,}, Val sequences: {len(val_ds):,}")
-
-    # Worker init function to ensure each worker has a deterministic seed
-    def worker_init_fn(worker_id):
-        worker_seed = 42 + worker_id
-        np.random.seed(worker_seed)
-        random.seed(worker_seed)
 
     # Generator for reproducible shuffling
     g = torch.Generator()
