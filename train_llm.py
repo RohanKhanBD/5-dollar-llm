@@ -42,6 +42,29 @@ def prepare_datasets(data_cfg, tokenizer, cache_dir="./processed_data"):
     # CASE 0: Dataset path is already a processed on-disk dataset
     # We check if the path passed in data_cfg.dataset_path is a directory containing a dataset dict
     if os.path.isdir(data_cfg.dataset_path):
+        # Check for metadata to validate max_seq_len consistency
+        metadata_path = os.path.join(data_cfg.dataset_path, "prep_metadata.json")
+        if os.path.exists(metadata_path):
+            try:
+                with open(metadata_path, "r") as f:
+                    prep_metadata = json.load(f)
+                    prep_max_seq = prep_metadata.get("max_seq_len")
+                    if prep_max_seq and prep_max_seq != data_cfg.seq_length:
+                        print("\n" + "="*70)
+                        print("⚠️  WARNING: max_seq_len MISMATCH DETECTED!")
+                        print("="*70)
+                        print(f"  Data was prepared with max_seq_len: {prep_max_seq}")
+                        print(f"  Current config has max_seq_len:     {data_cfg.seq_length}")
+                        print(f"\n  This WILL cause RoPE cache shape mismatch errors!")
+                        print(f"  Please re-run data preparation with current max_seq_len:")
+                        print(f"    python data/prepare_mix_data.py --target_tokens 25_000_000")
+                        print("="*70 + "\n")
+                        raise ValueError(f"max_seq_len mismatch: prepared={prep_max_seq}, config={data_cfg.seq_length}. Run: python data/prepare_mix_data.py --target_tokens 25_000_000 or adjust the number of tokens")
+                    else:
+                        print(f"✓ Validated: Data prepared with max_seq_len={prep_max_seq}")
+            except json.JSONDecodeError:
+                print("Warning: Could not read prep_metadata.json")
+        
         # Heuristic: check if it has dataset_dict.json or state.json or just load it
         try:
             print(f"Loading pre-processed dataset from {data_cfg.dataset_path}...")
@@ -191,6 +214,7 @@ def main():
     parser.add_argument("--gradient_accumulation_steps", type=int, help="Override gradient_accumulation_steps")
     parser.add_argument("--log_every", type=int, default=100, help="Logging frequency in steps")
     parser.add_argument("--warmup", type=str, default="true", help="Whether to perform untimed compilation warmup (true/false)")
+    parser.add_argument("--compare_baseline", action="store_true", help="Compare current run against baseline in plots")
 
     args = parser.parse_args()
 
@@ -282,11 +306,15 @@ def main():
 
     print("Loading dataset with Hugging Face Datasets API...")
     data_cfg = DataConfig(
-        dataset_path=args.dataset_path if args.dataset_path else DataConfig.dataset_path,
+        dataset_path=args.dataset_path if args.dataset_path else "auto",
         seq_length=config.max_seq_len,
         num_samples=num_docs,
         cache_dir="./hf_cache",
     )
+    
+    # Show which dataset was resolved (especially useful for auto-detection)
+    if not args.dataset_path:
+        print(f"📂 Auto-detected dataset: {data_cfg.dataset_path}")
 
     from data.loader import setup_tokenizer
     
@@ -330,6 +358,7 @@ def main():
         val_loader, 
         output_dir=output_dir, 
         load_weights_path=args.load_checkpoint,
+        compare_baseline=args.compare_baseline,
     )
 
 
