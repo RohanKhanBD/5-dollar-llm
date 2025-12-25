@@ -9,7 +9,8 @@ class BlueberryConfig:
     n_heads: int = 8         
     n_layers: int = 22
     d_ff: int = 2048         
-    
+    # Token Smear
+    smear_lambda: float = 0.7
     # GQA parameters
     n_kv_heads: int = 4      
     
