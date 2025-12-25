@@ -16,6 +16,8 @@ class MinimalLLM(nn.Module):
         # Token embeddings
         self.token_embedding = nn.Embedding(config.vocab_size, config.d_model)
         self.position_dropout = nn.Dropout(config.dropout)
+        # Token smear
+        self.tok_smear = nn.Linear(12, 1, bias=False)
 
         # Transformer blocks
         self.transformer_blocks = nn.ModuleList(
@@ -57,6 +59,11 @@ class MinimalLLM(nn.Module):
         # Token embeddings
         x = self.token_embedding(x) * math.sqrt(self.config.d_model)
         x = self.position_dropout(x)
+        # Token Smear
+        gate = self.config.smear_lambda * torch.sigmoid(
+            self.tok_smear.forward(x[:, 1:, : self.tok_smear.in_features])
+        )
+        x = torch.cat([x[:, :1], x[:, 1:] + gate * x[:, :-1]], dim=1)
 
         # Pass through transformer blocks
         for block in self.transformer_blocks:
