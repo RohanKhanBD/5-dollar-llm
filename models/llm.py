@@ -41,6 +41,9 @@ class MinimalLLM(nn.Module):
         self.lm_head.weight = self.token_embedding.weight
 
         self.apply(self._init_weights)
+        for n, p in self.named_parameters():
+            if "atten_gate" in n:
+                nn.init.zeros_(p)
 
     def _init_weights(self, module):
         if isinstance(module, nn.Linear):

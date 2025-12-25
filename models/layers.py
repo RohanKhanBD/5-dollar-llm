@@ -41,6 +41,7 @@ class MultiHeadAttention(nn.Module):
         self.w_o = nn.Linear(d_model, d_model, bias=False)
         self.q_norm = nn.RMSNorm(self.d_k)
         self.k_norm = nn.RMSNorm(self.d_k)
+        self.atten_gate = nn.Linear(12, n_heads)
         self.rotary = Rotary(self.d_k, max_seq_len)
         self.dropout = dropout
 
@@ -72,9 +73,13 @@ class MultiHeadAttention(nn.Module):
         attn_output = F.scaled_dot_product_attention(
             Q, K, V, is_causal=True, dropout_p=self.dropout if self.training else 0.0
         )
-        attn_output = attn_output.transpose(1, 2).reshape(
-            batch_size, seq_len, self.d_model
+        attn_output = attn_output.transpose(1, 2).view(
+            batch_size, seq_len, self.n_heads, self.d_k
         )
+        attn_output = attn_output * F.sigmoid(
+            self.atten_gate(x[..., : self.atten_gate.size(-1)])
+        ).view(batch_size, seq_len, self.n_heads, 1)
+        attn_output = attn_output.contiguous().view(batch_size, seq_len, self.d_model)
         # attn_output = attn_output.transpose(1, 2).reshape(B, T, self.d_model)
         return self.w_o(attn_output)
 
@@ -93,7 +98,9 @@ class TransformerBlock(nn.Module):
     ):
         super().__init__()
 
-        self.attention = MultiHeadAttention(d_model, n_heads, max_seq_len, dropout, n_kv_heads)
+        self.attention = MultiHeadAttention(
+            d_model, n_heads, max_seq_len, dropout, n_kv_heads
+        )
         self.feed_forward = SquaredReLUFeedForward(d_model, d_ff, dropout)
 
         # Normalization layers
