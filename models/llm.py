@@ -6,12 +6,14 @@ from configs.llm_config import BlueberryConfig
 from models.layers import TransformerBlock
 from torch.nn.attention.flex_attention import and_masks, create_block_mask
 
+
 class MinimalLLM(nn.Module):
     """Minimal dense LLM"""
 
     def __init__(self, config: BlueberryConfig, eos_token: int | None = None):
         super().__init__()
         self.config = config
+        self.eos_token = eos_token
 
         # Token embeddings
         self.token_embedding = nn.Embedding(config.vocab_size, config.d_model)
@@ -64,7 +66,9 @@ class MinimalLLM(nn.Module):
     def forward(self, x):
         batch_size, seq_len = x.size(0), x.size(1)
         mask_mod = self.gen_mask(x)
-        mask = create_block_mask(mask_mod, batch_size, None, seq_len, seq_len, _compile=True)
+        mask = create_block_mask(
+            mask_mod, batch_size, None, seq_len, seq_len, _compile=True
+        )
 
         # Token embeddings
         x = self.token_embedding(x) * math.sqrt(self.config.d_model)
