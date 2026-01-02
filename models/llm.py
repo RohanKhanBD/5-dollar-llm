@@ -65,7 +65,7 @@ class MinimalLLM(nn.Module):
     def forward(self, x):
         batch_size, seq_len = x.size(0), x.size(1)
         mask_mod = self.gen_mask(x)
-        mask = create_block_mask(mask_mod, None, None, seq_len, seq_len, _compile=True)
+        mask = create_block_mask(mask_mod, batch_size, None, seq_len, seq_len, _compile=True)
 
         # Token embeddings
         x = self.token_embedding(x) * math.sqrt(self.config.d_model)
