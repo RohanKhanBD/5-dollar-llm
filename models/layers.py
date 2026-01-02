@@ -34,7 +34,10 @@ class MultiHeadAttention(nn.Module):
         self.n_kv_heads = n_kv_heads if n_kv_heads is not None else n_heads
         self.num_key_value_groups = self.n_heads // self.n_kv_heads
         self.d_k = d_model // n_heads
-        
+
+        # Sparse attention gate
+        self.atten_gate = nn.Linear(12, n_heads, bias=False)
+        nn.init.zeros_(self.atten_gate.weight)
         # ============ MERGED QKVO PROJECTION ============
         # Instead of 4 separate Linear layers, use single merged projection
         q_size = d_model
@@ -99,7 +102,10 @@ class MultiHeadAttention(nn.Module):
         attn_output = attn_output.transpose(1, 2).reshape(
             batch_size, seq_len, self.d_model
         )
-        
+        # Sparse attention
+        attn_output = attn_output * F.sigmoid(
+            self.atten_gate(x[..., : self.atten_gate.in_features])
+        ).view(batch_size, seq_len, self.n_heads, 1)
         # ============ MERGED O PROJECTION ============
         # Use the last part of qkvo_proj for output projection
         return F.linear(attn_output, self.qkvo_proj[self.qkv_size:])
