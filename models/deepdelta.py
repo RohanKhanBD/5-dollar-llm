@@ -16,7 +16,7 @@ class DeepDeltaRes(nn.Module):
         self.sigmoid_scale = sigmoid_scale
 
         self.beta_in = nn.Linear(d_model, beta_dim, bias=False)
-        self.beta_out = nn.Linear(beta_dim, d_model, bias=True)
+        self.beta_out = nn.Linear(beta_dim, 1, bias=True)
         self.v_proj = nn.Linear(d_model, 1, bias=True)
 
     def forward(self, x: torch.Tensor, k_in: torch.Tensor, contxt: torch.Tensor):
