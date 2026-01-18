@@ -19,11 +19,21 @@ Help us build top 10 LLM in the world while keeping it fully open source, which 
 
 Can you make our LLM train faster and better?
 
+We keep the contributions scintifically rigurous. See **[Contributing Guidelines](docs/CONTRIBUTING.md)**.
+
 👉 **[Full Setup Guide](docs/SETUP_INSTRUCTIONS.md)** | **[Leaderboard](docs/LEADERBOARD.md)**
 
 ---
 
 ## Acceptance criteria:
+
+For the code to be accepted it must be **measured** and **break the record**. 🚀
+
+If we just add more features / code / architectures but records aren't getting broken, there is no progress. 📉
+
+> [!IMPORTANT]
+> Consider **more code = bad** (complexity, bloat, maintenance, bugs when upgrading), unless there is a new record in the training speed / loss, which justifies adding code. ✨
+
 0. Once you measure an improvement over the baseline according to the [Setup Guide](docs/SETUP_INSTRUCTIONS.md), submit your code in a GitHub pull request.
 1. The LLM must train faster or achieve lower loss on any of the benchmarks (8M, 20M, 100M, 1B tokens).
 2. Lower loss takes priority over training speed because pretraining data is limited - if your submission trains slower but achieves better (lower) loss for the same amount of tokens, it will probably be accepted, and vice versa.
