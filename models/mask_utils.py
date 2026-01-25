@@ -21,5 +21,5 @@ def get_block_mask(idx: torch.Tensor, eos_token_id: int, window_size: int) -> Bl
         None,
         T,
         T,
-        compile=True,
+        _compile=True,
     )
