@@ -60,7 +60,7 @@ class MinimalLLM(nn.Module):
 
         # Pass through transformer blocks
         for block in self.transformer_blocks:
-            x = block(x)
+            x = block(x, mask)
 
         # Output projection
         x = self.norm(x)
