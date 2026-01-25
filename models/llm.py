@@ -4,7 +4,7 @@ import math
 from typing import Optional
 from configs.llm_config import BlueberryConfig
 from models.layers import TransformerBlock
-from mask_utils import get_block_mask
+from .mask_utils import get_block_mask
 
 
 class MinimalLLM(nn.Module):
