@@ -4,6 +4,7 @@ import math
 from typing import Optional
 from configs.llm_config import BlueberryConfig
 from models.layers import TransformerBlock
+from mask_utils import get_block_mask
 
 
 class MinimalLLM(nn.Module):
@@ -51,6 +52,8 @@ class MinimalLLM(nn.Module):
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
     def forward(self, x):
+        # Mask
+        mask = get_block_mask(x, self.config.eos_token_id, self.config.window_size)
         # Token embeddings
         x = self.token_embedding(x) * math.sqrt(self.config.d_model)
         x = self.position_dropout(x)

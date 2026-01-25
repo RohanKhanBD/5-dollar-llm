@@ -11,8 +11,12 @@ class BlueberryConfig:
     d_ff: int = 2048         
     
     # GQA parameters
-    n_kv_heads: int = 4      
-    
+    n_kv_heads: int = 4
+
+    # Mask parameters
+    window_size: int = 1024
+    eos_token_id: int
+
     # Data params
     # ⚠️ WARNING: For simplicity, I recomend not changing max_seq_len
     # If you change max_seq_len, you MUST re-run data preparation!

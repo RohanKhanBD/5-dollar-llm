@@ -3,6 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchtune.modules import RotaryPositionalEmbeddings
 from .components import SquaredReLUFeedForward
+from torch.nn.attention.flex_attention import (
+    BlockMask,
+    flex_attention,
+)
 
 
 class Rotary(nn.Module):
@@ -62,7 +66,7 @@ class MultiHeadAttention(nn.Module):
         self.rotary = Rotary(self.d_k, max_seq_len)
         self.dropout = dropout
 
-    def forward(self, x):
+    def forward(self, x, mask:BlockMask):
         batch_size, seq_len = x.size(0), x.size(1)
         
         # ============ MERGED QKV PROJECTION ============
@@ -91,9 +95,7 @@ class MultiHeadAttention(nn.Module):
         Q, K, V = Q.transpose(1, 2), K.transpose(1, 2), V.transpose(1, 2)
         
         # Compute attention
-        attn_output = F.scaled_dot_product_attention(
-            Q, K, V, is_causal=True, dropout_p=self.dropout if self.training else 0.0
-        )
+        attn_output = flex_attention(Q, K, V, block_mask=mask)
         
         # Reshape output
         attn_output = attn_output.transpose(1, 2).reshape(
@@ -127,9 +129,9 @@ class TransformerBlock(nn.Module):
         self.norm2 = nn.RMSNorm(d_model)
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, x):
+    def forward(self, x, mask: BlockMask):
         # Self-attention
-        attn_out = self.attention(self.norm1(x))
+        attn_out = self.attention(self.norm1(x), mask)
         x = x + self.dropout(attn_out)
 
         # Feed-forward

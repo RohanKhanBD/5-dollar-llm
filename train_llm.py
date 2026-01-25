@@ -320,6 +320,7 @@ def main():
     # Setup tokenizer first to get vocab size
     tokenizer = setup_tokenizer(data_cfg)
     config.vocab_size = tokenizer.vocab_size
+    config.eos_token_id = tokenizer.eos_token_id
 
     # Prepare datasets (handles caching automatically)
     train_ds, val_ds = prepare_datasets(data_cfg, tokenizer)
