@@ -15,7 +15,7 @@ class BlueberryConfig:
 
     # Mask parameters
     window_size: int = 1024
-    eos_token_id: int
+    eos_token_id: int = 0 # will be overwriten by the real eos_token_id in train_llm.py
 
     # Data params
     # ⚠️ WARNING: For simplicity, I recomend not changing max_seq_len
